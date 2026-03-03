@@ -1,0 +1,7 @@
+# Machine-specific configuration
+# Copy this to ~/.zshrc.local and customize
+
+# Local environment (if using uv, rustup, etc.)
+# . "$HOME/.local/bin/env"
+
+# Add any machine-specific paths, environment variables, or aliases here

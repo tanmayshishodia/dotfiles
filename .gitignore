@@ -12,4 +12,4 @@ nvim/.tests
 
 # Local overrides (create these for machine-specific settings)
 *.local
-*.local.*
+!*.local.example
