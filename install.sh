@@ -29,13 +29,6 @@ if [ ! -f "$HOME/.zshrc.local" ]; then
     echo "  Created ~/.zshrc.local from template (edit for machine-specific config)"
 fi
 
-# Starship
-echo "Setting up Starship..."
-mkdir -p "$HOME/.config"
-backup_if_exists "$HOME/.config/starship.toml"
-ln -s "$DOTFILES_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
-echo "  Linked ~/.config/starship.toml"
-
 # WezTerm
 echo "Setting up WezTerm..."
 backup_if_exists "$HOME/.wezterm.lua"
