@@ -1,0 +1,58 @@
+# PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# History
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILE=~/.zsh_history
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+
+# Aliases
+alias tailscale=/Applications/Tailscale.app/Contents/MacOS/Tailscale
+
+# eza (modern ls replacement)
+alias ls='eza --icons --group-directories-first'
+alias l='eza -lbF --icons --group-directories-first --git'
+alias ll='eza -l --icons --group-directories-first --git --octal-permissions'
+alias la='eza -la --icons --group-directories-first --git'
+alias lt='eza --tree --level=2 --icons --group-directories-first --git-ignore'
+alias lta='eza --tree --level=2 --icons --group-directories-first -a'
+alias ld='eza -lD --icons'                          # directories only
+alias lm='eza -l --icons --sort=modified --reverse' # by modified (newest first)
+alias lS='eza -1 --icons --group-directories-first' # one per line
+alias l.='eza -d .*'                                # hidden files only
+
+# Modern CLI aliases
+alias cat='bat --paging=never'
+alias catp='bat'                    # with pager
+alias find='fd'
+alias grep='rg'
+alias du='dust'
+alias top='btop'
+alias lg='lazygit'
+alias lzd='lazydocker'
+alias diff='delta'
+alias sys='glances'
+
+# Plugins (via Homebrew)
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Zoxide (smart cd)
+eval "$(zoxide init zsh)"
+
+# Atuin (better shell history)
+eval "$(atuin init zsh)"
+
+# fzf (fuzzy finder)
+source <(fzf --zsh)
+
+# direnv (auto-load .envrc)
+eval "$(direnv hook zsh)"
+
+# Starship prompt
+eval "$(starship init zsh)"
+
+# Local config (machine-specific, not tracked in git)
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local

@@ -19,6 +19,23 @@ backup_if_exists() {
     fi
 }
 
+# Zsh
+echo "Setting up Zsh..."
+backup_if_exists "$HOME/.zshrc"
+ln -s "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc"
+echo "  Linked ~/.zshrc"
+if [ ! -f "$HOME/.zshrc.local" ]; then
+    cp "$DOTFILES_DIR/zsh/zshrc.local.example" "$HOME/.zshrc.local"
+    echo "  Created ~/.zshrc.local from template (edit for machine-specific config)"
+fi
+
+# Starship
+echo "Setting up Starship..."
+mkdir -p "$HOME/.config"
+backup_if_exists "$HOME/.config/starship.toml"
+ln -s "$DOTFILES_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
+echo "  Linked ~/.config/starship.toml"
+
 # WezTerm
 echo "Setting up WezTerm..."
 backup_if_exists "$HOME/.wezterm.lua"
@@ -40,4 +57,8 @@ echo "  Linked ~/.aerospace.toml"
 
 echo ""
 echo "Done! Dotfiles installed successfully."
-echo "You may need to restart your applications for changes to take effect."
+echo ""
+echo "Next steps:"
+echo "  1. Edit ~/.zshrc.local for machine-specific config (Google Cloud SDK, etc.)"
+echo "  2. Restart your terminal or run: source ~/.zshrc"
+echo "  3. Install required tools: brew install eza bat fd ripgrep dust btop lazygit lazydocker delta glances zoxide atuin fzf direnv starship zsh-autosuggestions zsh-syntax-highlighting"
