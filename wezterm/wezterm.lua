@@ -71,6 +71,9 @@ tabline.setup({
 })
 tabline.apply_to_config(config)
 
+-- Ensure tab bar always shows (after tabline plugin)
+config.hide_tab_bar_if_only_one_tab = false
+
 -- ===========================================
 -- Session Management (resurrect)
 -- ===========================================
