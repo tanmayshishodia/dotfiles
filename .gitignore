@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+
+# Neovim
+nvim/.repro
+nvim/debug
+nvim/data
+nvim/*.log
+nvim/tt.*
+nvim/foo.*
+nvim/.tests
+
+# Local overrides (create these for machine-specific settings)
+*.local
+*.local.*
