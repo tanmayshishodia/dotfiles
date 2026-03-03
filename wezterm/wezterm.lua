@@ -64,13 +64,17 @@ config.colors = {
   },
 }
 
--- Custom tab title with index and process name
+-- Custom tab title with index and process name (respects manual renames)
 wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
-  local title = tab.active_pane.title
-  if title and #title > 0 then
-    title = title:gsub('^.*/', '')  -- Remove path prefix
-  else
-    title = 'zsh'
+  -- Use custom title if set, otherwise use process name
+  local title = tab.tab_title
+  if not title or #title == 0 then
+    title = tab.active_pane.title
+    if title and #title > 0 then
+      title = title:gsub('^.*/', '')  -- Remove path prefix
+    else
+      title = 'zsh'
+    end
   end
   return string.format(' %d: %s ', tab.tab_index + 1, title)
 end)
@@ -99,7 +103,7 @@ config.send_composed_key_when_right_alt_is_pressed = true
 -- ===========================================
 -- Cursor & Scrolling
 -- ===========================================
-config.default_cursor_style = 'SteadyBar'
+config.default_cursor_style = 'SteadyBlock'
 config.cursor_blink_rate = 500
 config.scrollback_lines = 10000
 config.enable_scroll_bar = false
