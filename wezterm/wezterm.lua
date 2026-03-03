@@ -3,6 +3,13 @@ local config = wezterm.config_builder()
 local act = wezterm.action
 
 -- ===========================================
+-- Plugins
+-- ===========================================
+local tabline = wezterm.plugin.require 'https://github.com/michaelbrusegard/tabline.wez'
+local resurrect = wezterm.plugin.require 'https://github.com/MLFlexer/resurrect.wezterm'
+local workspace_switcher = wezterm.plugin.require 'https://github.com/MLFlexer/smart_workspace_switcher.wezterm'
+
+-- ===========================================
 -- Theme & Colors (High Contrast)
 -- ===========================================
 config.color_scheme = 'GitHub Dark High Contrast'
@@ -33,43 +40,85 @@ wezterm.on('gui-startup', function(cmd)
 end)
 
 -- ===========================================
--- Tab Bar (minimal)
+-- Tab Bar (using tabline plugin)
 -- ===========================================
-config.use_fancy_tab_bar = true
+config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = false
 config.tab_bar_at_bottom = false
 config.show_new_tab_button_in_tab_bar = false
+config.tab_max_width = 32
 
--- High contrast tab colors
-config.colors = {
-  tab_bar = {
-    background = '#0a0c10',
-    active_tab = {
-      bg_color = '#f0f3f6',
-      fg_color = '#0a0c10',
-      intensity = 'Bold',
-    },
-    inactive_tab = {
-      bg_color = '#272b33',
-      fg_color = '#9ea7b3',
-    },
-    inactive_tab_hover = {
-      bg_color = '#3d444d',
-      fg_color = '#f0f3f6',
-    },
+tabline.setup({
+  options = {
+    theme = 'GitHub Dark High Contrast',
+    section_separators = { left = '', right = '' },
+    component_separators = { left = '', right = '' },
+    tab_separators = { left = '', right = '' },
   },
-}
+  sections = {
+    tabline_a = { 'workspace' },
+    tabline_b = {},
+    tabline_c = {},
+    tab_active = { 'index', { 'process', padding = { left = 0, right = 1 } } },
+    tab_inactive = { 'index', { 'process', padding = { left = 0, right = 1 } } },
+    tabline_x = {},
+    tabline_y = { 'datetime' },
+    tabline_z = { 'hostname' },
+  },
+})
+tabline.apply_to_config(config)
+
+-- ===========================================
+-- Session Management (resurrect)
+-- ===========================================
+resurrect.periodic_save({ interval_seconds = 300 })
+
+-- ===========================================
+-- Workspace Switcher (with zoxide)
+-- ===========================================
+workspace_switcher.zoxide_path = '/opt/homebrew/bin/zoxide'
 
 -- ===========================================
 -- tmux Integration
 -- ===========================================
--- Allow Cmd keys to pass through to tmux
 config.send_composed_key_when_left_alt_is_pressed = true
 config.send_composed_key_when_right_alt_is_pressed = true
 
 -- ===========================================
+-- Cursor & Scrolling
+-- ===========================================
+config.default_cursor_style = 'SteadyBar'
+config.cursor_blink_rate = 500
+config.scrollback_lines = 10000
+config.enable_scroll_bar = false
+
+-- ===========================================
+-- Performance
+-- ===========================================
+config.front_end = 'WebGpu'
+config.webgpu_power_preference = 'HighPerformance'
+config.animation_fps = 60
+config.max_fps = 120
+
+-- ===========================================
+-- Quick Select (like tmux-fingers)
+-- ===========================================
+config.quick_select_patterns = {
+  -- Git hashes
+  '[0-9a-f]{7,40}',
+  -- URLs
+  'https?://[^\\s]+',
+  -- File paths
+  '[\\w\\-./]+\\.[a-zA-Z]{2,4}',
+  -- UUIDs
+  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+}
+
+-- ===========================================
 -- Keybindings
 -- ===========================================
+config.leader = { key = 'a', mods = 'CMD', timeout_milliseconds = 1000 }
+
 config.keys = {
   -- iTerm2-style pane splits
   { key = 'd', mods = 'CMD', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
@@ -95,11 +144,22 @@ config.keys = {
   { key = 'Enter', mods = 'OPT', action = act.SendKey { key = 'Enter', mods = 'ALT' } },
   { key = 'Enter', mods = 'SHIFT', action = act.SendKey { key = 'Enter', mods = 'ALT' } },
 
-  -- Pane Navigation
+  -- Pane Navigation (vim-style with Cmd+Shift)
+  { key = 'h', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Left' },
+  { key = 'l', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Right' },
+  { key = 'k', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Up' },
+  { key = 'j', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Down' },
+  -- Also keep arrow keys
   { key = 'LeftArrow', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Left' },
   { key = 'RightArrow', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Right' },
   { key = 'UpArrow', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Up' },
   { key = 'DownArrow', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Down' },
+
+  -- Pane resizing
+  { key = 'h', mods = 'CMD|CTRL', action = act.AdjustPaneSize { 'Left', 5 } },
+  { key = 'l', mods = 'CMD|CTRL', action = act.AdjustPaneSize { 'Right', 5 } },
+  { key = 'k', mods = 'CMD|CTRL', action = act.AdjustPaneSize { 'Up', 5 } },
+  { key = 'j', mods = 'CMD|CTRL', action = act.AdjustPaneSize { 'Down', 5 } },
 
   -- Pane management
   { key = 'w', mods = 'CMD', action = act.CloseCurrentPane { confirm = true } },
@@ -123,10 +183,48 @@ config.keys = {
   -- Command palette
   { key = 'p', mods = 'CMD|SHIFT', action = act.ActivateCommandPalette },
 
+  -- Quick select mode (like tmux-fingers)
+  { key = 'f', mods = 'CMD|SHIFT', action = act.QuickSelect },
+
+  -- Copy mode (vim-style selection)
+  { key = 'v', mods = 'LEADER', action = act.ActivateCopyMode },
+
+  -- Workspace switcher (with zoxide integration)
+  { key = 's', mods = 'CMD|SHIFT', action = workspace_switcher.switch_workspace() },
+
+  -- Session management (Cmd+A then S to save, Cmd+A then R to restore)
+  { key = 's', mods = 'LEADER', action = wezterm.action_callback(function(win, pane)
+    resurrect.save_state(resurrect.workspace_state.get_workspace_state())
+  end) },
+  { key = 'r', mods = 'LEADER', action = wezterm.action_callback(function(win, pane)
+    resurrect.fuzzy_load(win, pane, function(id)
+      local state = resurrect.load_state(id, 'workspace')
+      resurrect.workspace_state.restore_workspace(state, {
+        relative = true,
+        restore_text = true,
+      })
+    end)
+  end) },
+
   -- Pane rotation/swapping
   { key = '[', mods = 'CTRL|SHIFT', action = act.RotatePanes 'CounterClockwise' },
   { key = ']', mods = 'CTRL|SHIFT', action = act.RotatePanes 'Clockwise' },
-  { key = 's', mods = 'CTRL|SHIFT', action = act.PaneSelect { mode = 'SwapWithActive' } },
+  { key = 'Space', mods = 'LEADER', action = act.PaneSelect { mode = 'SwapWithActive' } },
+
+  -- Debug overlay
+  { key = 'L', mods = 'CTRL|SHIFT', action = act.ShowDebugOverlay },
+}
+
+-- ===========================================
+-- Mouse bindings
+-- ===========================================
+config.mouse_bindings = {
+  -- Cmd+Click to open URLs
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'CMD',
+    action = act.OpenLinkAtMouseCursor,
+  },
 }
 
 return config
