@@ -5,8 +5,6 @@ local act = wezterm.action
 -- ===========================================
 -- Plugins
 -- ===========================================
-local tabline = wezterm.plugin.require 'https://github.com/michaelbrusegard/tabline.wez'
-local resurrect = wezterm.plugin.require 'https://github.com/MLFlexer/resurrect.wezterm'
 local workspace_switcher = wezterm.plugin.require 'https://github.com/MLFlexer/smart_workspace_switcher.wezterm'
 
 -- ===========================================
@@ -18,7 +16,6 @@ config.window_background_opacity = 1.0
 -- ===========================================
 -- Typography
 -- ===========================================
-config.font = wezterm.font('MesloLGS Nerd Font', { weight = 'Regular' })
 config.font_size = 14.5
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }  -- Disable ligatures
 
@@ -40,7 +37,7 @@ wezterm.on('gui-startup', function(cmd)
 end)
 
 -- ===========================================
--- Tab Bar (using tabline plugin)
+-- Tab Bar (retro style with custom colors)
 -- ===========================================
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = false
@@ -48,36 +45,45 @@ config.tab_bar_at_bottom = false
 config.show_new_tab_button_in_tab_bar = false
 config.tab_max_width = 32
 
-tabline.setup({
-  options = {
-    theme = {
-      normal_mode = { a = { fg = '#0a0c10', bg = '#f0f3f6' }, b = { fg = '#f0f3f6', bg = '#272b33' }, c = { fg = '#9ea7b3', bg = '#0a0c10' } },
-      tab = { active = { fg = '#0a0c10', bg = '#f0f3f6' }, inactive = { fg = '#9ea7b3', bg = '#272b33' } },
+config.colors = {
+  tab_bar = {
+    background = '#0a0c10',
+    active_tab = {
+      bg_color = '#f0f3f6',
+      fg_color = '#0a0c10',
+      intensity = 'Bold',
     },
-    section_separators = { left = '', right = '' },
-    component_separators = { left = '', right = '' },
-    tab_separators = { left = '', right = '' },
+    inactive_tab = {
+      bg_color = '#272b33',
+      fg_color = '#9ea7b3',
+    },
+    inactive_tab_hover = {
+      bg_color = '#3d444d',
+      fg_color = '#f0f3f6',
+    },
   },
-  sections = {
-    tabline_a = { 'workspace' },
-    tabline_b = {},
-    tabline_c = {},
-    tab_active = { 'index', { 'process', padding = { left = 0, right = 1 } } },
-    tab_inactive = { 'index', { 'process', padding = { left = 0, right = 1 } } },
-    tabline_x = {},
-    tabline_y = { 'datetime' },
-    tabline_z = { 'hostname' },
-  },
-})
-tabline.apply_to_config(config)
+}
 
--- Ensure tab bar always shows (after tabline plugin)
-config.hide_tab_bar_if_only_one_tab = false
+-- Custom tab title with index and process name
+wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
+  local title = tab.active_pane.title
+  if title and #title > 0 then
+    title = title:gsub('^.*/', '')  -- Remove path prefix
+  else
+    title = 'zsh'
+  end
+  return string.format(' %d: %s ', tab.tab_index + 1, title)
+end)
 
--- ===========================================
--- Session Management (resurrect)
--- ===========================================
-resurrect.periodic_save({ interval_seconds = 300 })
+-- Status bar on the right
+wezterm.on('update-right-status', function(window, pane)
+  local workspace = window:active_workspace()
+  local date = wezterm.strftime '%H:%M'
+  window:set_right_status(wezterm.format {
+    { Foreground = { Color = '#9ea7b3' } },
+    { Text = ' ' .. workspace .. '  ' .. date .. ' ' },
+  })
+end)
 
 -- ===========================================
 -- Workspace Switcher (with zoxide)
@@ -110,14 +116,10 @@ config.max_fps = 120
 -- Quick Select (like tmux-fingers)
 -- ===========================================
 config.quick_select_patterns = {
-  -- Git hashes
-  '[0-9a-f]{7,40}',
-  -- URLs
-  'https?://[^\\s]+',
-  -- File paths
-  '[\\w\\-./]+\\.[a-zA-Z]{2,4}',
-  -- UUIDs
-  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+  '[0-9a-f]{7,40}',  -- Git hashes
+  'https?://[^\\s]+',  -- URLs
+  '[\\w\\-./]+\\.[a-zA-Z]{2,4}',  -- File paths
+  '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',  -- UUIDs
 }
 
 -- ===========================================
@@ -155,7 +157,6 @@ config.keys = {
   { key = 'l', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Right' },
   { key = 'k', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Up' },
   { key = 'j', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Down' },
-  -- Also keep arrow keys
   { key = 'LeftArrow', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Left' },
   { key = 'RightArrow', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Right' },
   { key = 'UpArrow', mods = 'CMD|SHIFT', action = act.ActivatePaneDirection 'Up' },
@@ -198,19 +199,6 @@ config.keys = {
   -- Workspace switcher (with zoxide integration)
   { key = 's', mods = 'CMD|SHIFT', action = workspace_switcher.switch_workspace() },
 
-  -- Session management (Cmd+A then S to save, Cmd+A then R to restore)
-  { key = 's', mods = 'LEADER', action = wezterm.action_callback(function(win, pane)
-    resurrect.save_state(resurrect.workspace_state.get_workspace_state())
-  end) },
-  { key = 'r', mods = 'LEADER', action = wezterm.action_callback(function(win, pane)
-    resurrect.fuzzy_load(win, pane, function(id)
-      local state = resurrect.load_state(id, 'workspace')
-      resurrect.workspace_state.restore_workspace(state, {
-        relative = true,
-        restore_text = true,
-      })
-    end)
-  end) },
 
   -- Pane rotation/swapping
   { key = '[', mods = 'CTRL|SHIFT', action = act.RotatePanes 'CounterClockwise' },
@@ -225,7 +213,6 @@ config.keys = {
 -- Mouse bindings
 -- ===========================================
 config.mouse_bindings = {
-  -- Cmd+Click to open URLs
   {
     event = { Up = { streak = 1, button = 'Left' } },
     mods = 'CMD',
