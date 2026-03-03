@@ -11,7 +11,7 @@ config.window_background_opacity = 1.0
 -- ===========================================
 -- Typography
 -- ===========================================
-config.font = wezterm.font('MesloLGS NF', { weight = 'Regular' })
+config.font = wezterm.font('MesloLGS Nerd Font', { weight = 'Regular' })
 config.font_size = 14.5
 config.harfbuzz_features = { 'calt=0', 'clig=0', 'liga=0' }  -- Disable ligatures
 
