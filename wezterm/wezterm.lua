@@ -50,7 +50,10 @@ config.tab_max_width = 32
 
 tabline.setup({
   options = {
-    theme = 'GitHub Dark High Contrast',
+    theme = {
+      normal_mode = { a = { fg = '#0a0c10', bg = '#f0f3f6' }, b = { fg = '#f0f3f6', bg = '#272b33' }, c = { fg = '#9ea7b3', bg = '#0a0c10' } },
+      tab = { active = { fg = '#0a0c10', bg = '#f0f3f6' }, inactive = { fg = '#9ea7b3', bg = '#272b33' } },
+    },
     section_separators = { left = '', right = '' },
     component_separators = { left = '', right = '' },
     tab_separators = { left = '', right = '' },
