@@ -24,10 +24,6 @@ echo "Setting up Zsh..."
 backup_if_exists "$HOME/.zshrc"
 ln -s "$DOTFILES_DIR/zsh/zshrc" "$HOME/.zshrc"
 echo "  Linked ~/.zshrc"
-if [ ! -f "$HOME/.zshrc.local" ]; then
-    cp "$DOTFILES_DIR/zsh/zshrc.local.example" "$HOME/.zshrc.local"
-    echo "  Created ~/.zshrc.local from template (edit for machine-specific config)"
-fi
 
 # WezTerm
 echo "Setting up WezTerm..."
@@ -52,8 +48,7 @@ echo ""
 echo "Done! Dotfiles installed successfully."
 echo ""
 echo "Next steps:"
-echo "  1. Edit ~/.zshrc.local for machine-specific config"
-echo "  2. Install CLI tools:"
+echo "  1. Install CLI tools:"
 echo "       macOS: ./scripts/install-tools-macos.sh"
 echo "       Linux: ./scripts/install-tools-linux.sh"
-echo "  3. Restart your terminal or run: source ~/.zshrc"
+echo "  2. Restart your terminal or run: source ~/.zshrc"

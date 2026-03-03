@@ -53,6 +53,3 @@ eval "$(direnv hook zsh)"
 
 # Starship prompt
 eval "$(starship init zsh)"
-
-# Local config (machine-specific, not tracked in git)
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
