@@ -48,6 +48,20 @@ eval "$(atuin init zsh)"
 # fzf (fuzzy finder)
 source <(fzf --zsh)
 
+# Fuzzy process killer
+function fkill() {
+  local pid
+  pid=$(ps -ef | sed 1d | fzf -m --preview '' | awk '{print $2}')
+  [[ -n "$pid" ]] && echo "$pid" | xargs kill "${1:--9}"
+}
+
+# Fuzzy SSH from ~/.ssh/config
+function fssh() {
+  local host
+  host=$(grep -i "^host " ~/.ssh/config | awk '{print $2}' | fzf --preview 'grep -A5 "Host {}" ~/.ssh/config')
+  [[ -n "$host" ]] && ssh "$host"
+}
+
 # Super FZF with Ripgrep: ripgrep -> fzf -> nvim [QUERY]
 function rfv() (
   RELOAD='reload:rg --column --color=always --smart-case {q} || :'
