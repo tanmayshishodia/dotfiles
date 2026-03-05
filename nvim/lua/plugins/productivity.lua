@@ -12,6 +12,8 @@ return {
         enabled = true,
         timeout = 3000,
       },
+      -- File explorer
+      explorer = { enabled = true },
       -- Quick file operations
       quickfile = { enabled = true },
       -- Big file handling (disable slow features)
