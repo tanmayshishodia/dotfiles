@@ -12,29 +12,24 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        -- Pyright with enhanced settings
-        pyright = {
-          settings = {
-            pyright = {
-              disableOrganizeImports = true, -- let ruff handle imports
-            },
-            python = {
-              analysis = {
-                typeCheckingMode = "standard", -- off, basic, standard, strict
-                autoImportCompletions = true,
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-                diagnosticMode = "openFilesOnly", -- workspace or openFilesOnly
-                inlayHints = {
-                  variableTypes = true,
-                  functionReturnTypes = true,
-                  callArgumentNames = true,
-                  pytestParameters = true,
-                },
-              },
-            },
-          },
+        -- Pyright disabled — ty is the type checker
+        pyright = { enabled = false },
+
+        -- ty: Astral's type checker (replaces pyright)
+        ty = {
+          cmd = { "ty", "server" },
+          filetypes = { "python" },
+          root_dir = function(fname)
+            return require("lspconfig.util").root_pattern(
+              "pyproject.toml",
+              "setup.py",
+              "setup.cfg",
+              "requirements.txt",
+              ".git"
+            )(fname) or vim.fn.getcwd()
+          end,
         },
+
         -- Ruff LSP for fast linting
         ruff = {
           cmd_env = { RUFF_TRACE = "messages" },
@@ -56,20 +51,6 @@ return {
             },
           },
         },
-        -- Astral's ty type checker (if installed)
-        ty = {
-          cmd = { "ty", "server" },
-          filetypes = { "python" },
-          root_dir = function(fname)
-            return require("lspconfig.util").root_pattern(
-              "pyproject.toml",
-              "setup.py",
-              "setup.cfg",
-              "requirements.txt",
-              ".git"
-            )(fname) or vim.fn.getcwd()
-          end,
-        },
       },
     },
   },
@@ -81,7 +62,6 @@ return {
     "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
-        "pyright",
         "ruff",
         "debugpy",
         "mypy",
