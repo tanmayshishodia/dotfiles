@@ -6,10 +6,14 @@
 
 $ErrorActionPreference = "Continue"
 
-$BUNDLE_DIR = "dotfiles-offline-bundle-linux-x86_64"
-$ARCHIVES_DIR = "$BUNDLE_DIR\archives"
-$PLUGINS_DIR = "$BUNDLE_DIR\nvim-plugins"
+# Place bundle OUTSIDE the repo to avoid recursive copy when we include dotfiles
+$REPO_ROOT   = Split-Path -Parent $PSScriptRoot
+$BUNDLE_NAME = "dotfiles-offline-bundle-linux-x86_64"
+$BUNDLE_DIR  = Join-Path (Split-Path -Parent $REPO_ROOT) $BUNDLE_NAME
+$ARCHIVES_DIR = Join-Path $BUNDLE_DIR "archives"
+$PLUGINS_DIR  = Join-Path $BUNDLE_DIR "nvim-plugins"
 
+Write-Host "Bundle output: $BUNDLE_DIR"
 Write-Host "Creating bundle directory..."
 New-Item -ItemType Directory -Force -Path $ARCHIVES_DIR | Out-Null
 New-Item -ItemType Directory -Force -Path $PLUGINS_DIR | Out-Null
@@ -161,14 +165,13 @@ foreach ($entry in $PLUGINS.GetEnumerator()) {
 # ---------------------------------------------------------------------------
 Write-Host ""
 Write-Host "==> Copying dotfiles..."
-$scriptDir  = Split-Path -Parent $PSScriptRoot   # repo root (parent of scripts/)
 $dotfilesDest = Join-Path $BUNDLE_DIR "dotfiles"
 
 if (Test-Path $dotfilesDest) {
     Remove-Item -Recurse -Force $dotfilesDest
 }
-Copy-Item -Recurse $scriptDir $dotfilesDest
-# Remove .git from the copy
+# $REPO_ROOT is the dotfiles directory; it's already outside $BUNDLE_DIR
+Copy-Item -Recurse $REPO_ROOT $dotfilesDest
 Remove-Item -Recurse -Force (Join-Path $dotfilesDest ".git") -ErrorAction SilentlyContinue
 
 # ---------------------------------------------------------------------------
@@ -177,11 +180,11 @@ Remove-Item -Recurse -Force (Join-Path $dotfilesDest ".git") -ErrorAction Silent
 Copy-Item (Join-Path $PSScriptRoot "install-offline.sh") $BUNDLE_DIR
 
 # ---------------------------------------------------------------------------
-# Create zip bundle
+# Create zip bundle (next to the repo parent directory)
 # ---------------------------------------------------------------------------
 Write-Host ""
 Write-Host "==> Creating zip bundle..."
-$zipPath = "$BUNDLE_DIR.zip"
+$zipPath = Join-Path (Split-Path -Parent $REPO_ROOT) "$BUNDLE_NAME.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath }
 Compress-Archive -Path $BUNDLE_DIR -DestinationPath $zipPath
 Remove-Item -Recurse -Force $BUNDLE_DIR
@@ -193,6 +196,6 @@ Write-Host "Bundle created: $zipPath ($sizeMB MB)"
 Write-Host "============================================"
 Write-Host ""
 Write-Host "Transfer to Red Hat VDI, then run:"
-Write-Host "  unzip $zipPath"
-Write-Host "  cd $BUNDLE_DIR"
+Write-Host "  unzip $BUNDLE_NAME.zip"
+Write-Host "  cd $BUNDLE_NAME"
 Write-Host "  bash install-offline.sh"
