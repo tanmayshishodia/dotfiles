@@ -84,6 +84,16 @@ if [ -d "$BUNDLE_DIR/archives" ]; then
             btop-*)    install_binary "btop"      "$extract_dir" ;;
             ruff-*)    install_binary "ruff"      "$extract_dir" ;;
             uv-*)      install_binary "uv"        "$extract_dir" ;;
+            WezTerm-*.AppImage|wezterm*.AppImage)
+                echo "  Installing WezTerm (AppImage)..."
+                appimage="$BUNDLE_DIR/archives/$filename"
+                chmod +x "$appimage"
+                rm -rf "$HOME/.local/wezterm-squashfs"
+                cd "$HOME/.local" && "$appimage" --appimage-extract >/dev/null 2>&1
+                mv "$HOME/.local/squashfs-root" "$HOME/.local/wezterm-squashfs"
+                ln -sf "$HOME/.local/wezterm-squashfs/usr/bin/wezterm" "$LOCAL_BIN/wezterm"
+                echo "  Installed wezterm (extracted to ~/.local/wezterm-squashfs)"
+                ;;
         esac
     done
 

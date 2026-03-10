@@ -70,6 +70,7 @@ Get-GithubRelease "starship/starship"      "starship-x86_64-unknown-linux-gnu\.t
 Get-GithubRelease "aristocratos/btop"      "btop-x86_64-unknown-linux-musl\.tbz$"      $ARCHIVES_DIR "btop"
 Get-GithubRelease "astral-sh/ruff"         "ruff-x86_64-unknown-linux-gnu\.tar\.gz$"   $ARCHIVES_DIR "ruff"
 Get-GithubRelease "astral-sh/uv"           "uv-x86_64-unknown-linux-gnu\.tar\.gz$"     $ARCHIVES_DIR "uv"
+Get-GithubRelease "wez/wezterm"            "\.AppImage$"                               $ARCHIVES_DIR "wezterm"
 
 # ---------------------------------------------------------------------------
 # Clone nvim plugins (from lazy-lock.json)
