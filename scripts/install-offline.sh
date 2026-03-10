@@ -84,8 +84,12 @@ if [ -d "$BUNDLE_DIR/archives" ]; then
             btop-*)    install_binary "btop"      "$extract_dir" ;;
             ruff-*)    install_binary "ruff"      "$extract_dir" ;;
             uv-*)      install_binary "uv"        "$extract_dir" ;;
-            MesloLGS-NF)
-                # This is a directory, not an archive — handled separately below
+            JetBrainsMono-NerdFont.zip)
+                echo "  Installing JetBrainsMono Nerd Font..."
+                mkdir -p "$HOME/.local/share/fonts/JetBrainsMono"
+                unzip -q "$archive" -d "$HOME/.local/share/fonts/JetBrainsMono/"
+                fc-cache -f "$HOME/.local/share/fonts/" 2>/dev/null || true
+                echo "  Installed JetBrainsMono Nerd Font (set it in your terminal preferences)"
                 ;;
             WezTerm-*.AppImage|wezterm*.AppImage)
                 echo "  Installing WezTerm (AppImage)..."
@@ -125,14 +129,7 @@ fi
 # ---------------------------------------------------------------------------
 # Install MesloLGS NF fonts
 # ---------------------------------------------------------------------------
-if [ -d "$BUNDLE_DIR/archives/MesloLGS-NF" ]; then
-    echo ""
-    echo "==> Installing MesloLGS NF fonts..."
-    mkdir -p "$HOME/.local/share/fonts/MesloLGS-NF"
-    cp "$BUNDLE_DIR/archives/MesloLGS-NF/"*.ttf "$HOME/.local/share/fonts/MesloLGS-NF/"
-    fc-cache -f "$HOME/.local/share/fonts/" 2>/dev/null || true
-    echo "  Installed MesloLGS NF (set 'MesloLGS NF' in your terminal font preferences)"
-fi
+: # fonts installed via archive handler above
 
 # ---------------------------------------------------------------------------
 # Install nvim plugins (pre-cloned from PowerShell bundle)
