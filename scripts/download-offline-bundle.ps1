@@ -66,7 +66,7 @@ Get-GithubRelease "jesseduffield/lazygit"  "lazygit_.*_Linux_x86_64\.tar\.gz$"  
 Get-GithubRelease "dandavison/delta"       "delta-.*-x86_64-unknown-linux-gnu\.tar\.gz$" $ARCHIVES_DIR "delta"
 Get-GithubRelease "bootandy/dust"          "dust-.*-x86_64-unknown-linux-gnu\.tar\.gz$" $ARCHIVES_DIR "dust"
 Get-GithubRelease "starship/starship"      "starship-x86_64-unknown-linux-gnu\.tar\.gz$" $ARCHIVES_DIR "starship"
-Get-GithubRelease "aristocratos/btop"      "btop-x86_64-linux-musl\.tbz$"              $ARCHIVES_DIR "btop"
+Get-GithubRelease "aristocratos/btop"      "btop-x86_64-unknown-linux-musl\.tbz$"      $ARCHIVES_DIR "btop"
 Get-GithubRelease "astral-sh/ruff"         "ruff-x86_64-unknown-linux-gnu\.tar\.gz$"   $ARCHIVES_DIR "ruff"
 Get-GithubRelease "astral-sh/uv"           "uv-x86_64-unknown-linux-gnu\.tar\.gz$"     $ARCHIVES_DIR "uv"
 
