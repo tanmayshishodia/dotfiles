@@ -151,7 +151,7 @@ if [ -d "$BUNDLE_DIR/nvim-plugins" ]; then
     echo "  Installed $count plugins"
     # Fix Windows CRLF line endings that break vim/lua file sourcing
     echo "  Fixing line endings..."
-    find "$LOCAL_SHARE" -type f \( -name "*.vim" -o -name "*.lua" \) \
+    /usr/bin/find "$LOCAL_SHARE" -type f \( -name "*.vim" -o -name "*.lua" \) \
         | xargs sed -i 's/\r$//' 2>/dev/null || true
 fi
 
