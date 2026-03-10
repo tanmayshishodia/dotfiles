@@ -160,6 +160,7 @@ foreach ($entry in $PLUGINS.GetEnumerator()) {
     }
 
     $result = git clone --depth 1 --branch $branch --quiet `
+        --config core.autocrlf=false `
         "https://github.com/$repo" $dest 2>&1
     if ($LASTEXITCODE -ne 0) {
         Write-Warning "    Clone failed: $result"
