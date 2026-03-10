@@ -55,7 +55,8 @@ function Get-GithubRelease {
 Write-Host ""
 Write-Host "==> Downloading Linux binaries..."
 
-Get-GithubRelease "neovim/neovim"          "nvim-linux-x86_64\.tar\.gz$"               $ARCHIVES_DIR "neovim"
+# neovim-releases builds target older glibc (works on RHEL 8 / glibc 2.28+)
+Get-GithubRelease "neovim/neovim-releases" "nvim-linux-x86_64\.tar\.gz$"               $ARCHIVES_DIR "neovim"
 Get-GithubRelease "BurntSushi/ripgrep"     "x86_64-unknown-linux-musl\.tar\.gz$"       $ARCHIVES_DIR "ripgrep"
 Get-GithubRelease "sharkdp/fd"             "fd-.*-x86_64-unknown-linux-gnu\.tar\.gz$"  $ARCHIVES_DIR "fd"
 Get-GithubRelease "sharkdp/bat"            "bat-.*-x86_64-unknown-linux-gnu\.tar\.gz$" $ARCHIVES_DIR "bat"

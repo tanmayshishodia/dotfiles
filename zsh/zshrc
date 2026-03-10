@@ -9,7 +9,7 @@ setopt SHARE_HISTORY
 setopt HIST_IGNORE_DUPS
 
 # Aliases
-alias tailscale=/Applications/Tailscale.app/Contents/MacOS/Tailscale
+[[ "$OSTYPE" == "darwin"* ]] && alias tailscale=/Applications/Tailscale.app/Contents/MacOS/Tailscale
 
 # eza (modern ls replacement)
 alias ls='eza --icons --group-directories-first'
@@ -35,18 +35,32 @@ alias lzd='lazydocker'
 alias diff='delta'
 alias sys='glances'
 
-# Plugins (via Homebrew)
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Zsh plugins
+# Try Homebrew (macOS), then common Linux system paths
+_source_if_exists() { [[ -f "$1" ]] && source "$1"; }
+
+_source_if_exists /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
+  || _source_if_exists /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
+  || _source_if_exists /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+_source_if_exists /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  || _source_if_exists /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+  || _source_if_exists /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Zoxide (smart cd)
-eval "$(zoxide init zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # Atuin (better shell history)
-eval "$(atuin init zsh)"
+command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 
 # fzf (fuzzy finder)
-source <(fzf --zsh)
+command -v fzf &>/dev/null && source <(fzf --zsh)
+
+# direnv (auto-load .envrc)
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
+
+# Starship prompt
+command -v starship &>/dev/null && eval "$(starship init zsh)"
 
 # Fuzzy process killer
 function fkill() {
@@ -81,9 +95,3 @@ function rfv() (
       --preview-window '~4,+{2}+4/3,<80(up)' \
       --query "$*"
 )
-
-# direnv (auto-load .envrc)
-eval "$(direnv hook zsh)"
-
-# Starship prompt
-eval "$(starship init zsh)"

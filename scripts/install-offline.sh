@@ -58,16 +58,17 @@ if [ -d "$BUNDLE_DIR/archives" ]; then
         esac
 
         case "$filename" in
-            nvim-*)
+            nvim-*.tar.gz)
                 echo "  Installing neovim..."
-                nvim_dir=$(find "$extract_dir" -maxdepth 2 -name "nvim" -type f 2>/dev/null | head -1 | xargs -I{} dirname {})
-                if [ -n "$nvim_dir" ]; then
-                    # Copy the whole nvim tree to ~/.local/nvim
-                    nvim_root=$(dirname "$nvim_dir")
+                nvim_bin=$(find "$extract_dir" -maxdepth 4 -name "nvim" -type f 2>/dev/null | head -1)
+                if [ -n "$nvim_bin" ]; then
+                    nvim_root=$(dirname "$(dirname "$nvim_bin")")
                     rm -rf "$HOME/.local/nvim"
                     cp -r "$nvim_root" "$HOME/.local/nvim"
                     ln -sf "$HOME/.local/nvim/bin/nvim" "$LOCAL_BIN/nvim"
                     echo "  Installed nvim"
+                else
+                    echo "  WARNING: nvim binary not found in archive"
                 fi
                 ;;
             ripgrep-*) install_binary "rg"       "$extract_dir" ;;
