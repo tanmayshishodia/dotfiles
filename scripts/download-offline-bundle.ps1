@@ -71,10 +71,17 @@ Get-GithubRelease "aristocratos/btop"      "btop-x86_64-unknown-linux-musl\.tbz$
 Get-GithubRelease "astral-sh/ruff"         "ruff-x86_64-unknown-linux-gnu\.tar\.gz$"   $ARCHIVES_DIR "ruff"
 Get-GithubRelease "astral-sh/uv"           "uv-x86_64-unknown-linux-gnu\.tar\.gz$"     $ARCHIVES_DIR "uv"
 Get-GithubRelease "wez/wezterm"            "\.AppImage$"                               $ARCHIVES_DIR "wezterm"
-# Nerd Font for terminal icons (starship, nvim, eza, etc.)
-Write-Host "  Downloading JetBrainsMono Nerd Font..."
-Invoke-WebRequest -Uri "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" `
-    -OutFile (Join-Path $ARCHIVES_DIR "JetBrainsMono-NerdFont.zip") -ErrorAction SilentlyContinue
+# MesloLGS NF - the font used on Mac (4 variants from romkatv/powerlevel10k-media)
+Write-Host "  Downloading MesloLGS NF fonts..."
+$mesloBase = "https://github.com/romkatv/powerlevel10k-media/raw/master"
+$mesloFonts = @("MesloLGS NF Regular.ttf", "MesloLGS NF Bold.ttf", "MesloLGS NF Italic.ttf", "MesloLGS NF Bold Italic.ttf")
+$mesloDir = Join-Path $ARCHIVES_DIR "MesloLGS-NF"
+New-Item -ItemType Directory -Force $mesloDir | Out-Null
+foreach ($f in $mesloFonts) {
+    $encoded = [uri]::EscapeDataString($f)
+    Invoke-WebRequest -Uri "$mesloBase/$encoded" -OutFile (Join-Path $mesloDir $f) -ErrorAction SilentlyContinue
+    Write-Host "    -> $f"
+}
 
 # ---------------------------------------------------------------------------
 # Clone nvim plugins (from lazy-lock.json)
