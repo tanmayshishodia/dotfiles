@@ -170,9 +170,17 @@ $dotfilesDest = Join-Path $BUNDLE_DIR "dotfiles"
 if (Test-Path $dotfilesDest) {
     Remove-Item -Recurse -Force $dotfilesDest
 }
-# $REPO_ROOT is the dotfiles directory; it's already outside $BUNDLE_DIR
-Copy-Item -Recurse $REPO_ROOT $dotfilesDest
-Remove-Item -Recurse -Force (Join-Path $dotfilesDest ".git") -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force $dotfilesDest | Out-Null
+
+# Copy only known dotfiles entries (avoids picking up leftover bundle dirs or
+# other junk that may have accumulated inside the repo root)
+$itemsToCopy = @("nvim", "zsh", "wezterm", "aerospace", "scripts", "install.sh", "README.md")
+foreach ($item in $itemsToCopy) {
+    $src = Join-Path $REPO_ROOT $item
+    if (Test-Path $src) {
+        Copy-Item -Recurse $src $dotfilesDest
+    }
+}
 
 # ---------------------------------------------------------------------------
 # Copy install script to bundle root
