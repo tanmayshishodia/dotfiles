@@ -66,11 +66,15 @@ Get-GithubRelease "ajeetdsouza/zoxide"     "zoxide-.*-x86_64-unknown-linux-musl\
 Get-GithubRelease "jesseduffield/lazygit"  "lazygit_.*_Linux_x86_64\.tar\.gz$"         $ARCHIVES_DIR "lazygit"
 Get-GithubRelease "dandavison/delta"       "delta-.*-x86_64-unknown-linux-gnu\.tar\.gz$" $ARCHIVES_DIR "delta"
 Get-GithubRelease "bootandy/dust"          "dust-.*-x86_64-unknown-linux-gnu\.tar\.gz$" $ARCHIVES_DIR "dust"
-Get-GithubRelease "starship/starship"      "starship-x86_64-unknown-linux-gnu\.tar\.gz$" $ARCHIVES_DIR "starship"
+Get-GithubRelease "starship/starship"      "starship-x86_64-unknown-linux-musl\.tar\.gz$" $ARCHIVES_DIR "starship"
 Get-GithubRelease "aristocratos/btop"      "btop-x86_64-unknown-linux-musl\.tbz$"      $ARCHIVES_DIR "btop"
 Get-GithubRelease "astral-sh/ruff"         "ruff-x86_64-unknown-linux-gnu\.tar\.gz$"   $ARCHIVES_DIR "ruff"
 Get-GithubRelease "astral-sh/uv"           "uv-x86_64-unknown-linux-gnu\.tar\.gz$"     $ARCHIVES_DIR "uv"
 Get-GithubRelease "wez/wezterm"            "\.AppImage$"                               $ARCHIVES_DIR "wezterm"
+# Nerd Font for terminal icons (starship, nvim, eza, etc.)
+Write-Host "  Downloading JetBrainsMono Nerd Font..."
+Invoke-WebRequest -Uri "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" `
+    -OutFile (Join-Path $ARCHIVES_DIR "JetBrainsMono-NerdFont.zip") -ErrorAction SilentlyContinue
 
 # ---------------------------------------------------------------------------
 # Clone nvim plugins (from lazy-lock.json)

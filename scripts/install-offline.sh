@@ -84,6 +84,13 @@ if [ -d "$BUNDLE_DIR/archives" ]; then
             btop-*)    install_binary "btop"      "$extract_dir" ;;
             ruff-*)    install_binary "ruff"      "$extract_dir" ;;
             uv-*)      install_binary "uv"        "$extract_dir" ;;
+            JetBrainsMono-NerdFont.zip)
+                echo "  Installing JetBrainsMono Nerd Font..."
+                mkdir -p "$HOME/.local/share/fonts/JetBrainsMono"
+                unzip -q "$archive" -d "$HOME/.local/share/fonts/JetBrainsMono/"
+                fc-cache -f "$HOME/.local/share/fonts/" 2>/dev/null || true
+                echo "  Installed JetBrainsMono Nerd Font (set it in your terminal preferences)"
+                ;;
             WezTerm-*.AppImage|wezterm*.AppImage)
                 echo "  Installing WezTerm (AppImage)..."
                 appimage="$BUNDLE_DIR/archives/$filename"
