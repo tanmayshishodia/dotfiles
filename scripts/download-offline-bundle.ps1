@@ -188,22 +188,30 @@ foreach ($item in $itemsToCopy) {
 Copy-Item (Join-Path $PSScriptRoot "install-offline.sh") $BUNDLE_DIR
 
 # ---------------------------------------------------------------------------
-# Create zip bundle (next to the repo parent directory)
+# Create tar.gz bundle (next to the repo parent directory)
+# tar.exe is built into Windows 10+ and handles long paths correctly.
+# The result is a proper Linux-compatible archive.
 # ---------------------------------------------------------------------------
 Write-Host ""
-Write-Host "==> Creating zip bundle..."
-$zipPath = Join-Path (Split-Path -Parent $REPO_ROOT) "$BUNDLE_NAME.zip"
-if (Test-Path $zipPath) { Remove-Item $zipPath }
-Compress-Archive -Path $BUNDLE_DIR -DestinationPath $zipPath
+Write-Host "==> Creating tar.gz bundle..."
+$parentDir  = Split-Path -Parent $REPO_ROOT
+$tarPath    = Join-Path $parentDir "$BUNDLE_NAME.tar.gz"
+if (Test-Path $tarPath) { Remove-Item $tarPath }
+
+# Run tar from the parent directory so paths inside archive are relative
+Push-Location $parentDir
+tar -czf "$BUNDLE_NAME.tar.gz" $BUNDLE_NAME
+Pop-Location
+
 Remove-Item -Recurse -Force $BUNDLE_DIR
 
-$sizeMB = [math]::Round((Get-Item $zipPath).Length / 1MB, 1)
+$sizeMB = [math]::Round((Get-Item $tarPath).Length / 1MB, 1)
 Write-Host ""
 Write-Host "============================================"
-Write-Host "Bundle created: $zipPath ($sizeMB MB)"
+Write-Host "Bundle created: $tarPath ($sizeMB MB)"
 Write-Host "============================================"
 Write-Host ""
 Write-Host "Transfer to Red Hat VDI, then run:"
-Write-Host "  unzip $BUNDLE_NAME.zip"
+Write-Host "  tar -xzf $BUNDLE_NAME.tar.gz"
 Write-Host "  cd $BUNDLE_NAME"
 Write-Host "  bash install-offline.sh"

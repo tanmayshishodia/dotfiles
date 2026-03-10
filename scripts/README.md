@@ -29,7 +29,7 @@ cd path\to\dotfiles
 powershell -ExecutionPolicy Bypass -File scripts\download-offline-bundle.ps1
 ```
 
-Creates `dotfiles-offline-bundle-linux-x86_64.zip` containing:
+Creates `dotfiles-offline-bundle-linux-x86_64.tar.gz` containing:
 - Linux binary archives (nvim, eza, bat, fd, rg, fzf, zoxide, lazygit, delta, dust, starship, btop, ruff, uv)
 - All nvim plugins pre-cloned (lazy.nvim + all 55 plugins from lazy-lock.json)
 - Dotfiles
